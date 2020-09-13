@@ -15,6 +15,8 @@ class GenClassFile(object):
     self.header_filename = f"{self.name}.hpp"
     self.implementation_filename = f"{self.name}.cpp"
     self.namespace = namespace
+    self.virtual = False
+    self.extend = False
 
   def include_guard(self):
     return f"{self.name.upper()}_HPP"
@@ -40,15 +42,22 @@ class GenClassFile(object):
       'namespace': self.namespace,
     }
     include_guard = self.include_guard()
+    virtual = ''
+    if self.virtual:
+      virtual = 'virtual '
+    baseclass = ''
+    if self.extend:
+      baseclass = f" : {self.extend}"
 
     return f"""#ifndef {include_guard}
 #define {include_guard}
 
-namespace { data['namespace'] } {{
-class {data['classname']} {{
+namespace { data['namespace']} {{
+
+class {data['classname']}{baseclass} {{
   public:
     {data['classname']}();
-    ~{data['classname']}();
+    {virtual}~{data['classname']}();
 }};
 
 }}
@@ -67,8 +76,7 @@ class {data['classname']} {{
     clsname = self.classname()
     namespace = self.namespace
 
-    return f"""
-#include "{header_filename}"
+    return f"""#include "{header_filename}"
 
 using namespace {namespace};
 
