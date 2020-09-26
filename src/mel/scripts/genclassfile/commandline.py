@@ -32,11 +32,11 @@ def entry_class(args):
 
 def get_parser():
   parser = argparse.ArgumentParser(description='generate a C++ class file')
-  default_namespace = os.environ.get('genclassfile_namespace', 'SomeNamespace')
 
+  default_namespace = os.environ.get('classfile_namespace', 'SomeNamespace')
   parser.add_argument('--namespace','-n', help="namespace of c++ class", default=default_namespace)
   parser.add_argument('--extend','-e', help="class to extend", default=False)
-  parser.add_argument('--virtual','-v', help="virtualize the destructor", default=False)
+  parser.add_argument('--virtual','-v', help="virtualize the destructor", action="store_true")
 
   subparsers = parser.add_subparsers(help='sub-command help')
 
