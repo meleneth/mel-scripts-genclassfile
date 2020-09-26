@@ -42,6 +42,8 @@ class CodeClass(object):
     lines.append(indent(['public:'])[0])
     for method in self.methods:
       lines.append(indent(indent([method.declaration()]))[0])
+    for field in self.fields:
+      lines.append(indent(indent([" ".join(field)]))[0])
     lines.append("};")
     return lines
 
