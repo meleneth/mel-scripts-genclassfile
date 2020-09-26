@@ -15,6 +15,7 @@ class CodeFile(object):
     self.add_implementation_local_include(self.header_filename)
     if self.target.extend_class_name:
       self.add_header_local_include(".".join([self.target.extend_class_name, 'hpp']))
+    self.add_type_include("coelacanth_types.hpp")
   def set_namespace(self, namespace):
     self.namespace = namespace
     return self
@@ -22,7 +23,7 @@ class CodeFile(object):
     self.type_includes = type_includes
     return self
   def add_type_include(self, type_include):
-    self.types_includes.append(type_include)
+    self.type_includes.append('"%s"' % (type_include))
     return self
   def save_header_file(self):
     if os.path.exists(self.header_filename):
