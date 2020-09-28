@@ -22,7 +22,7 @@ class CodeStateMachine(object):
       .add_body("  state_ = new_state;")
       .add_body("}"))
     for event_name in events:
-      (machine.add_method("void", event_name, var_machine_ref)
+      (machine.add_method("void", event_name, '')
         .virtual()
         .add_body("possible_transition(state_.%s(*this));" % (event_name)))
     self.files.append(machine)
