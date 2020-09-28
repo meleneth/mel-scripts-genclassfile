@@ -32,7 +32,7 @@ class CodeStateMachine(object):
     machine_state.add_method('void', 'onEnter', var_machine_ref).virtual()
     machine_state.add_method('void', 'onExit', var_machine_ref).virtual()
     for event_name in events:
-      (machine_state.add_method(translate_classname(machine_state_name) + "*", event_name, translate_classname(machine_state_name) + "& machine")
+      (machine_state.add_method(translate_classname(machine_state_name) + "*", event_name, translate_classname(machine_state) + "& machine")
         .virtual()
         .add_body("return nullptr;"))
     self.files.append(machine_state)
@@ -45,7 +45,7 @@ class CodeStateMachine(object):
       state_machine.add_method('void', 'onExit', var_machine_ref).virtual()
 
       for event_name in events:
-        (state_machine.add_method(translate_classname(machine_state_name) + "*", event_name, machine_state_name + "& machine")
+        (state_machine.add_method(translate_classname(machine_state_name) + "*", event_name, machine_state + "& machine")
           .virtual()
           .add_body("return nullptr;"))
       self.files.append(state_machine)
