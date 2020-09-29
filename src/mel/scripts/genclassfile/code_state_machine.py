@@ -1,4 +1,5 @@
 from mel.scripts.genclassfile.code_class import CodeClass
+from mel.scripts.genclassfile.code_file import CodeFile
 from mel.scripts.genclassfile.support import translate_classname
 
 class CodeStateMachine(object):
@@ -13,8 +14,8 @@ class CodeStateMachine(object):
 
     # Machine class
     machine = CodeClass(machine_name)
-    machine.add_field(translate_classname(machine_state_name), "* state_")
-    (machine.add_method("void", "possible_transition", var_machine_state_ptr)
+    machine.add_field(translate_classname(machine_state_name), "* state_;")
+    (machine.add_method("void", "possible_transition", translate_classname(machine_state_name) + "* new_state")
       .add_body("if(new_state) {")
       .add_body("  state_->onExit(*this);")
       .add_body("  delete state_;")
@@ -24,18 +25,21 @@ class CodeStateMachine(object):
     for event_name in events:
       (machine.add_method("void", event_name, '')
         .virtual()
-        .add_body("possible_transition(state_.%s(*this));" % (event_name)))
-    self.files.append(machine)
+        .add_body("possible_transition(state_->%s(*this));" % (event_name)))
+    file = CodeFile(machine)
+    file.add_implementation_local_include(".".join([machine_state_name, "hpp"]))
+    self.files.append(file)
 
     # State base class
     machine_state = CodeClass(machine_state_name).set_virtual()
     machine_state.add_method('void', 'onEnter', var_machine_ref).virtual()
     machine_state.add_method('void', 'onExit', var_machine_ref).virtual()
     for event_name in events:
-      (machine_state.add_method(translate_classname(machine_state_name) + "*", event_name, translate_classname(machine_state) + "& machine")
+      (machine_state.add_method(translate_classname(machine_state_name) + "*", event_name, translate_classname(machine_name) + "& machine")
         .virtual()
         .add_body("return nullptr;"))
-    self.files.append(machine_state)
+    file = CodeFile(machine_state)
+    self.files.append(file)
 
     # State subclasses
     for state in states:
@@ -45,7 +49,8 @@ class CodeStateMachine(object):
       state_machine.add_method('void', 'onExit', var_machine_ref).virtual()
 
       for event_name in events:
-        (state_machine.add_method(translate_classname(machine_state_name) + "*", event_name, machine_state + "& machine")
+        (state_machine.add_method(translate_classname(machine_state_name) + "*", event_name, translate_classname(machine_name) + "& machine")
           .virtual()
           .add_body("return nullptr;"))
-      self.files.append(state_machine)
+      file = CodeFile(state_machine)
+      self.files.append(file)

@@ -15,10 +15,9 @@ def entry_fsm(args):
   # fire_machine_state_third_state
   machine = CodeStateMachine(args.name, args.states, args.events)
   for file in machine.files:
-    code_file = CodeFile(file)
-    code_file.set_namespace(args.namespace)
-    code_file.save_header_file()
-    code_file.save_implementation_file()
+    file.set_namespace(args.namespace)
+    file.save_header_file()
+    file.save_implementation_file()
 
 def entry_class(args):
   my_class = CodeClass(args.name).set_namespace(args.namespace)
